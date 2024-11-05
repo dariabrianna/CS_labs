@@ -5,37 +5,38 @@ import { readFromFile, substituteLetters, findFrequency } from "./utils"; // Uti
 const DecryptorApp = () => {
   // Predefine the alphabet substitution mapping
   const initialSubstitutions = {
-    'V': 'e',
-    'W': 't',
-    'Q': 'h',
-    'N': 'o',
-    'C': 'f',
-    'G': 'n',
-    'X': 'i',
-    'P': 's',
-    'O': 'd',
-    'I': 'r',
-    'L': 'k',
-    'H': 'c',
-    'J': 'g',
-    'M': 'z',
-    'Z': 'm',
-    'U': 'p',
-    'D': 'u',
-    'F': 'y',
-    'S': 'l',
-    'K': 'v',
-    'A': 'b',
-    'R': 'w',
-    'Y': 'x',
-    'B': 'q',
-    'E': 'j',
-    'T': 'a',
+    V: "e",
+    W: "t",
+    Q: "h",
+    N: "o",
+    C: "f",
+    G: "n",
+    X: "i",
+    P: "s",
+    O: "d",
+    I: "r",
+    L: "k",
+    H: "c",
+    J: "g",
+    M: "z",
+    Z: "m",
+    U: "p",
+    D: "u",
+    F: "y",
+    S: "l",
+    K: "v",
+    A: "b",
+    R: "w",
+    Y: "x",
+    B: "q",
+    E: "j",
+    T: "a",
   };
 
   const [encryptedText, setEncryptedText] = useState("");
   const [decryptedText, setDecryptedText] = useState("");
-  const [letterSubstitutions, setLetterSubstitutions] = useState(initialSubstitutions); // Initialize with predefined alphabet
+  const [letterSubstitutions, setLetterSubstitutions] =
+    useState(initialSubstitutions);
   const [frequencyData, setFrequencyData] = useState({});
 
   const handleFileUpload = (e) => {
@@ -45,24 +46,27 @@ const DecryptorApp = () => {
     });
   };
 
-  // Update individual substitutions if needed
   const handleSubstitutionChange = (original, substitute) => {
     setLetterSubstitutions({ ...letterSubstitutions, [original]: substitute });
   };
 
   const handleDecrypt = () => {
     let decrypted = encryptedText;
+
+    // Substitute only those letters that have a defined substitution
     Object.entries(letterSubstitutions).forEach(([original, substitute]) => {
-      decrypted = substituteLetters(decrypted, original, substitute);
+      if (substitute) {
+        decrypted = substituteLetters(decrypted, original, substitute);
+      }
     });
+
     setDecryptedText(decrypted);
 
-    // Generate frequency data
+    // Generate frequency data for the partially decrypted text
     const frequency = findFrequency(decrypted);
     const frequencyLabels = Object.keys(frequency);
     const frequencyValues = Object.values(frequency);
 
-    // Format data for the BarChart
     setFrequencyData({
       labels: frequencyLabels,
       datasets: [
@@ -118,7 +122,10 @@ const DecryptorApp = () => {
       <button onClick={handleDecrypt}>Decrypt</button>
 
       {/* Display the decrypted text */}
-      <textarea value={decryptedText} readOnly rows="10" cols="50" />
+      <div>
+        <h3>Decrypted Text:</h3>
+        <textarea value={decryptedText} readOnly rows="10" cols="50" />
+      </div>
 
       {/* Render BarChart if frequencyData is available */}
       {frequencyData && frequencyData.labels && (

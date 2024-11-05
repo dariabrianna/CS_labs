@@ -3,7 +3,7 @@ import numpy as np
 import math
 
 def clean_key(key):
-    # Eliminate duplicate letters and keep only alphabetical characters
+    # aici eliminam caracterele care se repeta 
     key = ''.join(sorted(set(key), key=key.index))
     key = re.sub(r'[^A-Za-zĂÂÎȘȚ]', '', key)
     return key.upper()
@@ -14,35 +14,32 @@ def create_playfair_matrix(key):
     matrix = []
     used_chars = set()
 
-    # Add key letters to the matrix
+    #adaugam cheia
     for char in key:
         if char not in used_chars:
             matrix.append(char)
             used_chars.add(char)
 
-    # Add remaining letters of the alphabet
+    # adaugam literele ramase in alfabet 
     for char in alphabet:
         if char not in used_chars:
             matrix.append(char)
             used_chars.add(char)
 
-    # Calculate dimensions for the matrix based on the number of characters
     n = len(matrix)
     rows = int(math.ceil(math.sqrt(n)))
     cols = rows
 
-    # Padding with a placeholder character if necessary
     while len(matrix) < rows * cols:
-        matrix.append('X')  # Padding with 'X' or another placeholder
+        matrix.append('X') 
 
     return np.array(matrix).reshape(rows, cols)
 
-# The rest of the code remains the same
 
 
 
 def preprocess_text(text):
-    # Remove any character that’s not in the Romanian alphabet
+   
     text = re.sub(r'[^A-Za-zĂÂÎȘȚ]', '', text)
     return text.upper()
 
@@ -63,22 +60,20 @@ def playfair_encrypt(matrix, plaintext):
         row2, col2 = find_position(matrix, char2)
         
         if row1 == row2:
-            # Same row: move right
+            
             ciphertext += matrix[row1, (col1 + 1) % 6]
             ciphertext += matrix[row2, (col2 + 1) % 6]
         elif col1 == col2:
-            # Same column: move down
             ciphertext += matrix[(row1 + 1) % 6, col1]
             ciphertext += matrix[(row2 + 1) % 6, col2]
         else:
-            # Rectangle: swap columns
             ciphertext += matrix[row1, col2]
             ciphertext += matrix[row2, col1]
     
     return ciphertext
 
 def playfair_decrypt(matrix, ciphertext):
-    ciphertext = preprocess_text(ciphertext)  # Ensure text is preprocessed
+    ciphertext = preprocess_text(ciphertext)  
     plaintext = ''
 
     for i in range(0, len(ciphertext), 2):
@@ -87,15 +82,12 @@ def playfair_decrypt(matrix, ciphertext):
         row2, col2 = find_position(matrix, char2)
         
         if row1 == row2:
-            # Same row: move left
             plaintext += matrix[row1, (col1 - 1) % 6]
             plaintext += matrix[row2, (col2 - 1) % 6]
         elif col1 == col2:
-            # Same column: move up
             plaintext += matrix[(row1 - 1) % 6, col1]
             plaintext += matrix[(row2 - 1) % 6, col2]
         else:
-            # Rectangle: swap columns
             plaintext += matrix[row1, col2]
             plaintext += matrix[row2, col1]
 
